@@ -1,55 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-
-// Sample projects data
-const projects = [
-  {
-    id: 1,
-    title: "AdvocatesIphones",
-    description: "E-commerce store for retail iPhone and Apple devices",
-    url: "https://www.advocatesiphones.co.za/",
-    tech: ["Next.js", "Supabase", "Tailwind CSS", "Typescript", "Vercel"],
-    period: "2026",
-  },
-  {
-    id: 2,
-    title: "Cohort",
-    description: "Centralised campus social media app, with institution isolation ",
-    url: "https://yourcohort.co.za",
-    tech: ["Expo React Native", "Firebase Cloud Messaging", "Supabase", "Typescript"],
-    period: "In Construction",
-  },
-
-  {
-    id: 3,
-    title: "Dev Portfolio",
-    description: "Developer portfolio showcase platform with dynamic routing",
-    url: "https://SinoCodes.vercel.app",
-    tech: ["Next.js 16", "TypeScript", "Vercel"],
-    period: "2024",
-  },
-];
-
-// Sample client quotes
-const quotes = [
-  {
-    id: 1,
-    text: "Sinovuyo delivered a robust e-commerce solution that exceeded our expectations. His technical expertise and attention to detail were exceptional.",
-    author: "Masakhe Mvunelo, CEO of AdvocatesIphones",
-    rating: 5,
-  },
-];
-
-// Truncate text to 125 characters for quote display
-const truncateText = (text: string, maxLength: number = 125): string => {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + "...";
-};
+import { projects } from "@/data/projects";
 
 export default function Home() {
-  const [revealed, setRevealed] = useState<number[]>([]);
   const revealRefs = useRef<(HTMLElement | null)[]>([]);
 
   // Intersection Observer for scroll reveals
@@ -58,8 +14,6 @@ export default function Home() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const index = Number(entry.target.getAttribute("data-reveal-index"));
-            setRevealed((prev) => [...prev, index]);
             observer.unobserve(entry.target);
           }
         });
@@ -90,9 +44,6 @@ export default function Home() {
           </a>
           <a href="#projects" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
             Projects
-          </a>
-          <a href="#quotes" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-            Testimonials
           </a>
         </nav>
       </header>
@@ -133,12 +84,6 @@ export default function Home() {
               >
                 View Projects
               </a>
-              <a
-                href="#quotes"
-                className="inline-block px-6 py-3 border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-lg font-medium hover:border-[var(--accent)] transition-colors"
-              >
-                Testimonials
-              </a>
             </div>
           </div>
         </section>
@@ -150,15 +95,14 @@ export default function Home() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project, index) => (
-              <div
+              <Link
                 key={project.id}
-                className="project-card animate-fade-in-up"
+                href={`/projects/${project.slug}`}
+                className="project-card animate-fade-in-up block"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
-                  <a href={project.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                    {project.title}
-                  </a>
+                  {project.title}
                 </h3>
                 <p className="text-[var(--text-secondary)] mb-4">{project.description}</p>
                 <div className="mb-4">
@@ -166,7 +110,7 @@ export default function Home() {
                     {project.period}
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap gap-2">
                   {project.tech.map((tech) => (
                     <span
                       key={tech}
@@ -176,67 +120,7 @@ export default function Home() {
                     </span>
                   ))}
                 </div>
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block px-4 py-2 text-sm font-medium bg-[var(--accent)] text-white rounded hover:bg-[var(--accent-hover)] transition-colors"
-                >
-                  View Project
-                </a>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section id="quotes" className="mb-24" data-reveal-index={3}>
-          <h3 className="text-3xl font-bold text-[var(--text-primary)] mb-12 display-heading">
-            Testimonials
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {quotes.map((quote, index) => (
-              <div
-                key={quote.id}
-                className="quote-card animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <p className="text-[var(--text-primary)] mb-4 italic">
-                  {truncateText(quote.text)}
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[var(--accent)] flex items-center justify-center text-white font-bold">
-                    {quote.author.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-[var(--text-primary)]">
-                      {quote.author}
-                    </p>
-                    <div className="flex gap-1 mt-1">
-                      {[...Array(quote.rating)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className="w-4 h-4 text-[var(--accent)]"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <circle cx="10" cy="10" r="8" />
-                        </svg>
-                      ))}
-                      {[...Array(5 - quote.rating)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className="w-4 h-4 text-[var(--border-subtle)]"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <circle cx="10" cy="10" r="8" />
-                        </svg>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
